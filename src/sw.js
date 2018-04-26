@@ -10,7 +10,7 @@ self.addEventListener('install', (event) => {
        '/js/main.js',
        '/js/restaurant_info.js',
        '/js/dbhelper.js',
-       /*'/data/restaurants.json',*/
+       '/restaurants',
        '/images/',
        '/images/1-400small.jpg',
        '/images/1-600medium.jpg',
