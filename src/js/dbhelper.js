@@ -1,6 +1,8 @@
 /**
  * Common database helper functions.
  */
+let res = {};
+
 class DBHelper {
 
   /**
@@ -17,12 +19,12 @@ class DBHelper {
   /**
    * Fetch all restaurants.
    */
-  static fetchRestaurants(callback) {
 
+  static fetchRestaurants(callback) {
+   // console.log('callback:', callback);
     fetch(`http://localhost:1337/restaurants`).then(response => {
       return response.json();
     }).then( response => {
-      let res = {};
       for(let i = 0; i < response.length; i++) {
         response[i].id = i+1;
       }
@@ -171,6 +173,7 @@ class DBHelper {
     return marker;
   }
 }
+
 /**
  * Service worker registeration.
  */
@@ -182,3 +185,5 @@ navigator.serviceWorker.register('/sw.js').then(function(reg) {
 }).catch(function(error) {
   console.log('Registration failed:', error);
 });
+
+

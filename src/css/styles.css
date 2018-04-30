@@ -99,8 +99,9 @@ nav h1 a {
 }
 /* ====================== Map ====================== */
 #map {
-  height: 400px;
+  height: 270px;
   width: 100%;
+  margin-top:auto;
   background-color: #ccc;
 }
 /* ====================== Restaurant Filtering ====================== */

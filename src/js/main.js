@@ -12,6 +12,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
   fetchCuisines();
 });
 
+
+
 /**
  * Fetch all neighborhoods and set their HTML.
  */
@@ -82,28 +84,33 @@ window.initMap = () => {
   });
   updateRestaurants();
 }
+  let selectedRestaurants = {};
+
 
 /**
  * Update page and map for current restaurants.
  */
 updateRestaurants = () => {
+
   const cSelect = document.getElementById('cuisines-select');
   const nSelect = document.getElementById('neighborhoods-select');
-
   const cIndex = cSelect.selectedIndex;
   const nIndex = nSelect.selectedIndex;
-
   const cuisine = cSelect[cIndex].value;
   const neighborhood = nSelect[nIndex].value;
-
   DBHelper.fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, (error, restaurants) => {
     if (error) { // Got an error!
       console.error(error);
     } else {
+      console.log('in update', restaurants);
+      //afterUpdate(restaurants);
+      //console.log('restaurants in update:', selectedRestaurants);
       resetRestaurants(restaurants);
       fillRestaurantsHTML();
     }
   })
+  console.log('before update', selectedRestaurants);
+
 }
 
 /**
@@ -130,28 +137,35 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
   });
   addMarkersToMap();
 }
-
+let allRestaurants = {};
 /**
  * Create restaurant HTML.
  */
 createRestaurantHTML = (restaurant) => {
   const li = document.createElement('li');
-
-  const image = document.createElement('img');
+  let image = document.createElement('img');
   image.className = 'restaurant-img';
+
+  loadImage = (restaurant, idStr) => {
+
+  image = document.getElementById(idStr);
   image.src = DBHelper.imageUrlForRestaurant(restaurant);
+
   // add alt tag to images.
   image.alt = "showing restaurant is " + restaurant.name + " and cuisine type is " + restaurant.cuisine_type;
   //add srcset and sizes to make responsive images.
   image.srcset =  `images/${restaurant.id}-400small.jpg 480w,images/${restaurant.id}-600medium.jpg 600w`;
   image.sizes =  "(max-width: 600px) 60vw,(min-width: 601px) 50vw";
 
-  li.append(image);
+  }
+  this.loadImage = loadImage;
+  //add id to images
 
+  image.id = 'image' + restaurant.id;
+  li.append(image);
   const name = document.createElement('h2');
   name.innerHTML = restaurant.name;
   li.append(name);
-
   const neighborhood = document.createElement('p');
   neighborhood.innerHTML = restaurant.neighborhood;
   li.append(neighborhood);
@@ -180,4 +194,66 @@ addMarkersToMap = (restaurants = self.restaurants) => {
     });
     self.markers.push(marker);
   });
+}
+
+/**
+ * Add observer to detect intersecting and then load images when observer activated.
+ */
+var io = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting) {
+      //console.log('in observer intersecting', entry.target.id);
+      let idStr = entry.target.id;
+      let idNumber = idStr.replace( /^\D+/g, '');
+      idNumber = Number(idNumber);
+      //console.log('idNonstr:', typeof( idNumber));
+      loadImage(res.restaurants[idNumber-1],idStr);
+      }
+  });
+});
+
+window.addEventListener('load', (event) => {
+  let el2 = document.querySelectorAll('#restaurants-list img');
+  el2.forEach(e => {
+    io.observe(e);
+  });
+
+});
+
+/**
+ * Update restaurants when selected.
+ */
+updateSelectedRestaurants = () => {
+  const cSelect = document.getElementById('cuisines-select');
+  const nSelect = document.getElementById('neighborhoods-select');
+  const cIndex = cSelect.selectedIndex;
+  const nIndex = nSelect.selectedIndex;
+  const cuisine = cSelect[cIndex].value;
+  const neighborhood = nSelect[nIndex].value;
+  DBHelper.fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, (error, restaurants) => {
+    if (error) { // Got an error!
+      console.error(error);
+    } else {
+      console.log('in update', restaurants);
+      resetRestaurants(restaurants);
+      fillRestaurantsHTML();
+      afterUpdate(restaurants);
+    }
+  })
+  console.log('before update', selectedRestaurants);
+}
+
+afterUpdate = (x) => {
+ console.log('x:', x);
+ x.forEach(a => {
+  console.log('a,image:', a);
+  let restaurant = a;
+  image = document.getElementById('image'+a.id);
+  image.src = DBHelper.imageUrlForRestaurant(restaurant);
+  // add alt tag to images.
+  image.alt = "showing restaurant is " + restaurant.name + " and cuisine type is " + restaurant.cuisine_type;
+  //add srcset and sizes to make responsive images.
+  image.srcset =  `images/${restaurant.id}-400small.jpg 480w,images/${restaurant.id}-600medium.jpg 600w`;
+  image.sizes =  "(max-width: 600px) 60vw,(min-width: 601px) 50vw";
+ });
 }
