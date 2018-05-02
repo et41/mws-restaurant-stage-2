@@ -82,10 +82,21 @@ window.initMap = () => {
     center: loc,
     scrollwheel: false
   });
+  map.addListener('tilesloaded', (event) => {
+    loadMap();
+
+  });
   updateRestaurants();
 }
-  let selectedRestaurants = {};
 
+let selectedRestaurants = {};
+
+loadMap = () => {
+  let mapContainer = document.getElementById('map');
+  mapContainer.style.position = 'relative';
+  mapContainer.style.left = 0;
+  console.log('map loaded');
+}
 
 /**
  * Update page and map for current restaurants.
@@ -202,12 +213,13 @@ addMarkersToMap = (restaurants = self.restaurants) => {
 var io = new IntersectionObserver(entries => {
   entries.forEach(entry => {
     if(entry.isIntersecting) {
-      //console.log('in observer intersecting', entry.target.id);
+      console.log('in observer intersecting', entry.target.id);
       let idStr = entry.target.id;
       let idNumber = idStr.replace( /^\D+/g, '');
       idNumber = Number(idNumber);
       //console.log('idNonstr:', typeof( idNumber));
       loadImage(res.restaurants[idNumber-1],idStr);
+      io.unobserve(entry.target);
       }
   });
 });
@@ -234,19 +246,19 @@ updateSelectedRestaurants = () => {
     if (error) { // Got an error!
       console.error(error);
     } else {
-      console.log('in update', restaurants);
+      //console.log('in update', restaurants);
       resetRestaurants(restaurants);
       fillRestaurantsHTML();
       afterUpdate(restaurants);
     }
   })
-  console.log('before update', selectedRestaurants);
+  //console.log('before update', selectedRestaurants);
 }
 
 afterUpdate = (x) => {
- console.log('x:', x);
+ //console.log('x:', x);
  x.forEach(a => {
-  console.log('a,image:', a);
+  //console.log('a,image:', a);
   let restaurant = a;
   image = document.getElementById('image'+a.id);
   image.src = DBHelper.imageUrlForRestaurant(restaurant);
@@ -257,3 +269,5 @@ afterUpdate = (x) => {
   image.sizes =  "(max-width: 600px) 60vw,(min-width: 601px) 50vw";
  });
 }
+
+
