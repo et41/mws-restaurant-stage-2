@@ -1,7 +1,6 @@
 @charset "utf-8";
 /* CSS Document */
 body,td,th,p {
-  position:  relative;
   font-family: Arial, Helvetica, sans-serif;
   font-size: 10pt;
   color: #333;
@@ -169,6 +168,7 @@ nav h1 a {
   text-align: left;
   width: calc((100% - 200px)/2);
   padding-bottom: 50px;
+
 }
 #restaurants-list .restaurant-img {
   background-color: #ccc;

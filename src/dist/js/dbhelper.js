@@ -2,7 +2,7 @@
  * Common database helper functions.
  */
 let res = {};
-console.log('db helper');
+
 class DBHelper {
 
   /**
@@ -19,7 +19,9 @@ class DBHelper {
   /**
    * Fetch all restaurants.
    */
+
   static fetchRestaurants(callback) {
+   // console.log('callback:', callback);
     fetch(`http://localhost:1337/restaurants`).then(response => {
       return response.json();
     }).then( response => {
@@ -32,20 +34,9 @@ class DBHelper {
     }).catch(error => {
       callback(error, null);
     });
+
   }
-  /**
-   * Map marker for a restaurant.
-   */
-  static mapMarkerForRestaurant(restaurant, map) {
-    const marker = new google.maps.Marker({
-      position: restaurant.latlng,
-      title: restaurant.name,
-      url: DBHelper.urlForRestaurant(restaurant),
-      map: map,
-      animation: google.maps.Animation.DROP}
-    );
-    return marker;
-  }
+
   /**
    * Fetch a restaurant by its ID.
    */
@@ -168,7 +159,19 @@ class DBHelper {
     return (`/img/${restaurant.photograph}`);
   }
 
-
+  /**
+   * Map marker for a restaurant.
+   */
+  static mapMarkerForRestaurant(restaurant, map) {
+    const marker = new google.maps.Marker({
+      position: restaurant.latlng,
+      title: restaurant.name,
+      url: DBHelper.urlForRestaurant(restaurant),
+      map: map,
+      animation: google.maps.Animation.DROP}
+    );
+    return marker;
+  }
 }
 
 /**
@@ -182,4 +185,5 @@ navigator.serviceWorker.register('/sw.js').then(function(reg) {
 }).catch(function(error) {
   console.log('Registration failed:', error);
 });
+
 
