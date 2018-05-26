@@ -4,15 +4,17 @@ let cleanCSS = require('gulp-clean-css');
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
 var htmlmin = require('gulp-htmlmin');
+var browserSync = require('browser-sync');
 
-gulp.task('default', ['styles','minify-css','scripts','minify'], function() {
+gulp.task('default', ['serve','styles','minify-css','scripts','minify'], function() {
 
 });
-gulp.task('dist', [
+/*gulp.task('dist', [
 	'styles',
 	'scripts-dist',
-	'minify'
-]);
+	'minify',
+	'serve',
+]);*/
 
 
 gulp.task('minify', function() {
@@ -23,11 +25,11 @@ gulp.task('minify', function() {
 });
 
 gulp.task('styles', function() {
-	gulp.src('sass/**/*.scss')
+	gulp.src('css/**/*.css')
 		.pipe(sass({
 			outputStyle: 'compressed'
 		}).on('error', sass.logError))
-		.pipe(gulp.dest('/css'))
+		.pipe(gulp.dest('/sass'))
 });
 
 gulp.task('minify-css', function() {
@@ -35,17 +37,29 @@ gulp.task('minify-css', function() {
     .pipe(cleanCSS({compatibility: 'ie8'}))
     .pipe(gulp.dest('sass'));
 });
+
 gulp.task('scripts', function() {
-	gulp.src(['js/**/dbhelper.js','js/**/main.js'])
+	return gulp.src(['js/**/dbhelper.js', 'js/**/main.js', 'js/**/intersection.js', 'js/**/mainRestaurants.js'])
 		.pipe(concat('all.js'))
-		.pipe(gulp.dest('dist/js'));
+		.pipe(gulp.dest('js'))
+});
+
+gulp.task('watch', function() {
+  gulp.watch('css/*.css', ['minify-css']);
+  gulp.watch('js/*.js', ['scripts']);
 });
 
 
-gulp.task('scripts-dist', function() {
-	gulp.src(['js/**/dbhelper.js','js/**/main.js'])
-		.pipe(concat('all.js'))
-		.pipe(uglify().on('error', uglify.logError))
-		.pipe(gulp.dest('dist/js'));
+gulp.task('serve', ['scripts', 'minify-css','styles'], function() {
+  browserSync.init({
+    server: '.',
+    port: 8000
+  });
+  gulp.watch('css/*.css', ['minify-css']).on('change', browserSync.reload);
+  gulp.watch('js/*.js', ['scripts']).on('change', browserSync.reload);
+  gulp.watch('css/*.css', ['styles']).on('change', browserSync.reload);
+
+  gulp.watch('*.html').on('change', browserSync.reload);
 });
+
 

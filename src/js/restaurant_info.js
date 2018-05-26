@@ -198,3 +198,15 @@ document.addEventListener('keyup', (e) => {
   }
 }
 });
+
+/**
+  *
+  */
+/*let mapElement = document.getElementById('map');
+let mapContainer = document.getElementById('map-container');
+
+window.addEventListener('load', () => {
+  console.log('addEventListener');
+  mapContainer.style.position = 'relative';
+  mapContainer.style.left = 0;
+});*/
