@@ -1,29 +1,12 @@
 let restaurant;
 var map;
 
-/**
- * Initialize Google map, called from HTML.
- */
-window.initMap = () => {
-  fetchRestaurantFromURL((error, restaurant) => {
-    if (error) { // Got an error!
-      console.error(error);
-    } else {
-      self.map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 16,
-        center: restaurant.latlng,
-        scrollwheel: false
-      });
-      fillBreadcrumb();
-      DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
-    }
-  });
-}
 
 /**
  * Get current restaurant from page URL.
  */
 fetchRestaurantFromURL = (callback) => {
+  console.log('fetchRestaurantFromURL');
   if (self.restaurant) { // restaurant already fetched!
     callback(null, self.restaurant)
     return;
@@ -49,6 +32,7 @@ fetchRestaurantFromURL = (callback) => {
  * Create restaurant HTML and add it to the webpage
  */
 fillRestaurantHTML = (restaurant = self.restaurant) => {
+  console.log('fillRestaurantHTML');
   const name = document.getElementById('restaurant-name');
   name.innerHTML = restaurant.name;
 
@@ -99,6 +83,7 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
  * Create all reviews HTML and add them to the webpage.
  */
 fillReviewsHTML = (reviews = self.restaurant.reviews) => {
+  console.log('fillReviewsHTML');
   const container = document.getElementById('reviews-container');
   const title = document.createElement('h3');
   title.innerHTML = 'Reviews';
@@ -123,6 +108,7 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
  * Create review HTML and add it to the webpage.
  */
 createReviewHTML = (review) => {
+  console.log('createReviewHTML');
   const li = document.createElement('li');
   const name = document.createElement('p');
   name.innerHTML = review.name;
@@ -159,6 +145,7 @@ createReviewHTML = (review) => {
  * Add restaurant name to the breadcrumb navigation menu
  */
 fillBreadcrumb = (restaurant=self.restaurant) => {
+  console.log('fillBreadcrumb:');
   const breadcrumb = document.getElementById('breadcrumb-ol');
   const li = document.createElement('li');
   li.innerHTML = restaurant.name;
@@ -199,14 +186,3 @@ document.addEventListener('keyup', (e) => {
 }
 });
 
-/**
-  *
-  */
-/*let mapElement = document.getElementById('map');
-let mapContainer = document.getElementById('map-container');
-
-window.addEventListener('load', () => {
-  console.log('addEventListener');
-  mapContainer.style.position = 'relative';
-  mapContainer.style.left = 0;
-});*/

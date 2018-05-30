@@ -6,7 +6,7 @@ var uglify = require('gulp-uglify');
 var htmlmin = require('gulp-htmlmin');
 var browserSync = require('browser-sync');
 
-gulp.task('default', ['serve','styles','minify-css','scripts','minify'], function() {
+gulp.task('default', ['serve','styles','minify-css','scripts'], function() {
 
 });
 /*gulp.task('dist', [

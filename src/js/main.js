@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
   fetchNeighborhoods();
   fetchCuisines();
 
+
  // activateMap();
 });
 
@@ -22,12 +23,7 @@ window.addEventListener('load', () => {
 
 });
 
-/*activateMap = () => {
-  let mapId = document.getElementById('map');
-  mapId.style.position = 'relative';
-  mapId.style.left = 0;
-}
-*/
+
 /**
  * Fetch all neighborhoods and set their HTML.
  */
