@@ -62,7 +62,7 @@ initMap = () => {
     lng: -73.987501
   };
   self.map = new google.maps.Map(document.getElementById('map'), {
-    zoom: 11,
+    zoom: 12,
     center: loc,
     scrollwheel: false
   });
