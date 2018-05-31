@@ -383,6 +383,26 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
   addMarkersToMap();
 }
 
+/**
+ * Adjust footer
+ */
+resizeFooter = () => {
+  let lastElement = document.getElementById('restaurants-list');
+
+  let footerElement = document.getElementById('footer');
+  let height = lastElement.scrollHeight;
+
+  footerElement.style.position = 'relative';
+  footerElement.style.top = height+3+'px';
+}
+
+window.addEventListener('load', () => {
+  resizeFooter();
+});
+
+window.onresize = () => {
+  resizeFooter();
+}
 
   console.log('intersection.js');
   let idIntersectingElement;

@@ -41,3 +41,14 @@
 *:hover {
   outline: none;
 }
+#footer {
+  color: #B1B1B1;
+  background: #444444;
+  opacity: 1;
+  font-size: 8pt;
+  letter-spacing: 1px;
+  padding: 25px;
+  margin-bottom: -70px;
+  text-align: center;
+  text-transform: uppercase;
+}
