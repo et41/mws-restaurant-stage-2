@@ -3,9 +3,10 @@ console.log('mainRestaurants.js');
  * Create restaurant HTML.
  */
 createRestaurantHTML = (restaurant,callback) => {
-  console.log('createRestaurantHTML');
+  console.log('createRestaurantHTML',restaurant);
 
   const li = document.createElement('li');
+  io.observe(li);
   let image = document.createElement('img');
   image.className = 'restaurant-img';
   //add id to images
@@ -27,10 +28,9 @@ createRestaurantHTML = (restaurant,callback) => {
   more.innerHTML = 'View Details';
   more.href = DBHelper.urlForRestaurant(restaurant);
   li.append(more)
-  //addIntersection();
 
   loadImage = (restaurant, idStr) => {
-
+  console.log('loadImage,restaurant,idStr', restaurant,idStr);
   image = document.getElementById(idStr);
   image.src = DBHelper.imageUrlForRestaurant(restaurant);
   image.alt = "showing restaurant is " + restaurant.name + " and cuisine type is " + restaurant.cuisine_type;
@@ -69,7 +69,7 @@ updateSelectedRestaurants = () => {
 }
 
 afterUpdate = (x) => {
-      console.log('afterUpdate');
+console.log('afterUpdate');
 
  x.forEach(a => {
   let restaurant = a;
@@ -82,3 +82,4 @@ afterUpdate = (x) => {
   image.sizes =  "(max-width: 600px) 60vw,(min-width: 601px) 50vw";
  });
 }
+

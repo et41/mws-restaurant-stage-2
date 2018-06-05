@@ -1,4 +1,20 @@
 /**
+ * IndexedDB.
+ */
+initIDB = () => {
+  if(!('indexedDB' in window)) {
+     console.log('This browser doesnt support idb');
+  }
+  return idb.open('restaurant-app', 1, function(upgradeDb) {
+    switch (upgradeDb.oldVersion) {
+      case 0:
+        console.log('Creating the restaurants object store');
+        upgradeDb.createObjectStore('restaurants', {keyPath: 'id'});
+
+      }
+  });
+}
+/**
  * Common database helper functions.
  */
 let res = {};
@@ -20,18 +36,50 @@ class DBHelper {
    * Fetch all restaurants.
    */
   static fetchRestaurants(callback) {
-    fetch(`http://localhost:1337/restaurants`).then(response => {
+  console.log('FETCH RESTAURANT!!!!');
+
+  initIDB().then(function(db) {
+  if(!db) return;
+  var tx = db.transaction('restaurants', 'readwrite');
+  var store = tx.objectStore('restaurants');
+  store.getAll().then(items => {
+    //console.log('getting stored elements!!!!');
+    //console.log('items:',items.length);
+    if(items.length > 0) {
+      console.log('get data from db!!',items);
+      res.restaurants = items;
+      const restaurants = res.restaurants;
+      //console.log('ressss:',items);
+      callback(null, restaurants);
+    }else {
+      console.log('get data from server!!');
+      fetch(`http://localhost:1337/restaurants`).then(response => {
       return response.json();
-    }).then( response => {
+    }).then(response => {
       for(let i = 0; i < response.length; i++) {
         response[i].id = i+1;
       }
       res.restaurants = response;
       const restaurants = res.restaurants;
-      callback(null, restaurants);
+      console.log('rrestaurant in fetch event : ', restaurants);
+      var tx = db.transaction('restaurants', 'readwrite');
+      var store = tx.objectStore('restaurants');
+      restaurants.forEach((item) => {
+        console.log('Adding item', item);
+        store.put(item);
+      })
+      store.getAll().then(data => {
+        console.log('data',data);
+        callback(null, restaurants);
+      })
     }).catch(error => {
       callback(error, null);
     });
+    }
+  })
+});
+
+
   }
   /**
    * Map marker for a restaurant.
@@ -165,6 +213,7 @@ class DBHelper {
    * Restaurant image URL.
    */
   static imageUrlForRestaurant(restaurant) {
+    console.log('restaurant in image url', restaurant);
     return (`/img/${restaurant.photograph}`);
   }
 
@@ -183,3 +232,24 @@ navigator.serviceWorker.register('/sw.js').then(function(reg) {
   console.log('Registration failed:', error);
 });
 
+
+
+//console.log('res', res);
+
+/*dbPromise.then(function(db) {
+
+  var tx = db.transaction('restaurants', 'readwrite');
+  var store = tx.objectStore('restaurants');
+  let restaurants = res.restaurants;
+  return Promise.all(restaurants.map(function(item) {
+    console.log('Adding item', item);
+    return store.add(item);
+  })
+  ).catch(function(e) {
+    tx.abort();
+      console.log(e);
+    }).then(function() {
+      console.log('All items added successfully');
+    });
+});
+*/

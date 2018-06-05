@@ -14,15 +14,14 @@ document.addEventListener('DOMContentLoaded', (event) => {
   fetchCuisines();
 
 
- // activateMap();
 });
 
-window.addEventListener('load', () => {
+/*window.addEventListener('load', () => {
 
   addIntersection();
 
 });
-
+*/
 
 /**
  * Fetch all neighborhoods and set their HTML.

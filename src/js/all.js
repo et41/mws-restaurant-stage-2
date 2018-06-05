@@ -1,4 +1,20 @@
 /**
+ * IndexedDB.
+ */
+initIDB = () => {
+  if(!('indexedDB' in window)) {
+     console.log('This browser doesnt support idb');
+  }
+  return idb.open('restaurant-app', 1, function(upgradeDb) {
+    switch (upgradeDb.oldVersion) {
+      case 0:
+        console.log('Creating the restaurants object store');
+        upgradeDb.createObjectStore('restaurants', {keyPath: 'id'});
+
+      }
+  });
+}
+/**
  * Common database helper functions.
  */
 let res = {};
@@ -20,18 +36,50 @@ class DBHelper {
    * Fetch all restaurants.
    */
   static fetchRestaurants(callback) {
-    fetch(`http://localhost:1337/restaurants`).then(response => {
+  console.log('FETCH RESTAURANT!!!!');
+
+  initIDB().then(function(db) {
+  if(!db) return;
+  var tx = db.transaction('restaurants', 'readwrite');
+  var store = tx.objectStore('restaurants');
+  store.getAll().then(items => {
+    //console.log('getting stored elements!!!!');
+    //console.log('items:',items.length);
+    if(items.length > 0) {
+      console.log('get data from db!!',items);
+      res.restaurants = items;
+      const restaurants = res.restaurants;
+      //console.log('ressss:',items);
+      callback(null, restaurants);
+    }else {
+      console.log('get data from server!!');
+      fetch(`http://localhost:1337/restaurants`).then(response => {
       return response.json();
-    }).then( response => {
+    }).then(response => {
       for(let i = 0; i < response.length; i++) {
         response[i].id = i+1;
       }
       res.restaurants = response;
       const restaurants = res.restaurants;
-      callback(null, restaurants);
+      console.log('rrestaurant in fetch event : ', restaurants);
+      var tx = db.transaction('restaurants', 'readwrite');
+      var store = tx.objectStore('restaurants');
+      restaurants.forEach((item) => {
+        console.log('Adding item', item);
+        store.put(item);
+      })
+      store.getAll().then(data => {
+        console.log('data',data);
+        callback(null, restaurants);
+      })
     }).catch(error => {
       callback(error, null);
     });
+    }
+  })
+});
+
+
   }
   /**
    * Map marker for a restaurant.
@@ -165,6 +213,7 @@ class DBHelper {
    * Restaurant image URL.
    */
   static imageUrlForRestaurant(restaurant) {
+    console.log('restaurant in image url', restaurant);
     return (`/img/${restaurant.photograph}`);
   }
 
@@ -184,6 +233,26 @@ navigator.serviceWorker.register('/sw.js').then(function(reg) {
 });
 
 
+
+//console.log('res', res);
+
+/*dbPromise.then(function(db) {
+
+  var tx = db.transaction('restaurants', 'readwrite');
+  var store = tx.objectStore('restaurants');
+  let restaurants = res.restaurants;
+  return Promise.all(restaurants.map(function(item) {
+    console.log('Adding item', item);
+    return store.add(item);
+  })
+  ).catch(function(e) {
+    tx.abort();
+      console.log(e);
+    }).then(function() {
+      console.log('All items added successfully');
+    });
+});
+*/
 let restaurants,
   neighborhoods,
   cuisines
@@ -200,15 +269,14 @@ document.addEventListener('DOMContentLoaded', (event) => {
   fetchCuisines();
 
 
- // activateMap();
 });
 
-window.addEventListener('load', () => {
+/*window.addEventListener('load', () => {
 
   addIntersection();
 
 });
-
+*/
 
 /**
  * Fetch all neighborhoods and set their HTML.
@@ -404,41 +472,35 @@ window.onresize = () => {
   resizeFooter();
 }
 
-  console.log('intersection.js');
-  let idIntersectingElement;
-  var io = new IntersectionObserver(entries => {
-      console.log('iointersect');
+let idIntersectingElement;
+var io = new IntersectionObserver(entries => {
+  console.log('iointersect');
 
-    entries.forEach(entry => {
+  entries.forEach(entry => {
     if(entry.isIntersecting) {
       //console.log('intersecting',entry.target.id,entry);
       let idStr = entry.target.childNodes[0].id;
       let idNumber = idStr.replace( /^\D+/g, '');
       idNumber = Number(idNumber);
       idIntersectingElement = idNumber;
+      console.log('load image from intersect:',res.restaurants[idNumber-1])
       loadImage(res.restaurants[idNumber-1],idStr);
       io.unobserve(entry.target);
     }
-    });
   });
+});
 
 
-addIntersection = () => {
-  //console.log('addIntersection');
-  let el2 = document.querySelectorAll('#restaurants-list li');
-  //console.log('el2:',el2);
-  el2.forEach(e => {
-    io.observe(e);
-  });
-}
+
 console.log('mainRestaurants.js');
 /**
  * Create restaurant HTML.
  */
 createRestaurantHTML = (restaurant,callback) => {
-  console.log('createRestaurantHTML');
+  console.log('createRestaurantHTML',restaurant);
 
   const li = document.createElement('li');
+  io.observe(li);
   let image = document.createElement('img');
   image.className = 'restaurant-img';
   //add id to images
@@ -460,10 +522,9 @@ createRestaurantHTML = (restaurant,callback) => {
   more.innerHTML = 'View Details';
   more.href = DBHelper.urlForRestaurant(restaurant);
   li.append(more)
-  //addIntersection();
 
   loadImage = (restaurant, idStr) => {
-
+  console.log('loadImage,restaurant,idStr', restaurant,idStr);
   image = document.getElementById(idStr);
   image.src = DBHelper.imageUrlForRestaurant(restaurant);
   image.alt = "showing restaurant is " + restaurant.name + " and cuisine type is " + restaurant.cuisine_type;
@@ -502,7 +563,7 @@ updateSelectedRestaurants = () => {
 }
 
 afterUpdate = (x) => {
-      console.log('afterUpdate');
+console.log('afterUpdate');
 
  x.forEach(a => {
   let restaurant = a;
@@ -515,3 +576,4 @@ afterUpdate = (x) => {
   image.sizes =  "(max-width: 600px) 60vw,(min-width: 601px) 50vw";
  });
 }
+
