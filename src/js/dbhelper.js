@@ -22,17 +22,6 @@ console.log('db helper');
 class DBHelper {
 
   /**
-   * Database URL.
-   * Change this to restaurants.json file location on your server.
-   */
- /* static get DATABASE_URL() {
-    const port = 8000;
-    const serverextension = "http://127.0.0.1:8887/";
-    //return `http://localhost:${port}/data/restaurants.json`;
-    return `http://localhost:${port}/data/restaurants.json`;
-  }*/
-
-  /**
    * Fetch all restaurants.
    */
   static fetchRestaurants(callback) {
@@ -43,8 +32,7 @@ class DBHelper {
   var tx = db.transaction('restaurants', 'readwrite');
   var store = tx.objectStore('restaurants');
   store.getAll().then(items => {
-    //console.log('getting stored elements!!!!');
-    //console.log('items:',items.length);
+
     if(items.length > 0) {
       console.log('get data from db!!',items);
       res.restaurants = items;
@@ -56,9 +44,7 @@ class DBHelper {
       fetch(`http://localhost:1337/restaurants`).then(response => {
       return response.json();
     }).then(response => {
-      for(let i = 0; i < response.length; i++) {
-        response[i].id = i+1;
-      }
+
       res.restaurants = response;
       const restaurants = res.restaurants;
       console.log('rrestaurant in fetch event : ', restaurants);
@@ -231,25 +217,3 @@ navigator.serviceWorker.register('/sw.js').then(function(reg) {
 }).catch(function(error) {
   console.log('Registration failed:', error);
 });
-
-
-
-//console.log('res', res);
-
-/*dbPromise.then(function(db) {
-
-  var tx = db.transaction('restaurants', 'readwrite');
-  var store = tx.objectStore('restaurants');
-  let restaurants = res.restaurants;
-  return Promise.all(restaurants.map(function(item) {
-    console.log('Adding item', item);
-    return store.add(item);
-  })
-  ).catch(function(e) {
-    tx.abort();
-      console.log(e);
-    }).then(function() {
-      console.log('All items added successfully');
-    });
-});
-*/

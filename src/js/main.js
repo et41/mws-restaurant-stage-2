@@ -16,12 +16,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
 });
 
-/*window.addEventListener('load', () => {
-
-  addIntersection();
-
-});
-*/
 
 /**
  * Fetch all neighborhoods and set their HTML.
@@ -146,11 +140,6 @@ elementCollapsable.addEventListener('click', () => {
   initMap();
 });
 
-console.log('map.js');
-/*document.addEventListener('DOMContentLoaded', () => {
-  initMap();
-});*/
-
 
 /**
  * Add markers for current restaurants to the map.
@@ -194,25 +183,4 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
     ul.append(createRestaurantHTML(restaurant));
   });
   addMarkersToMap();
-}
-
-/**
- * Adjust footer
- */
-resizeFooter = () => {
-  let lastElement = document.getElementById('restaurants-list');
-
-  let footerElement = document.getElementById('footer');
-  let height = lastElement.scrollHeight;
-
-  footerElement.style.position = 'relative';
-  footerElement.style.top = height+3+'px';
-}
-
-window.addEventListener('load', () => {
-  resizeFooter();
-});
-
-window.onresize = () => {
-  resizeFooter();
 }

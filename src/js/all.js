@@ -22,17 +22,6 @@ console.log('db helper');
 class DBHelper {
 
   /**
-   * Database URL.
-   * Change this to restaurants.json file location on your server.
-   */
- /* static get DATABASE_URL() {
-    const port = 8000;
-    const serverextension = "http://127.0.0.1:8887/";
-    //return `http://localhost:${port}/data/restaurants.json`;
-    return `http://localhost:${port}/data/restaurants.json`;
-  }*/
-
-  /**
    * Fetch all restaurants.
    */
   static fetchRestaurants(callback) {
@@ -43,8 +32,7 @@ class DBHelper {
   var tx = db.transaction('restaurants', 'readwrite');
   var store = tx.objectStore('restaurants');
   store.getAll().then(items => {
-    //console.log('getting stored elements!!!!');
-    //console.log('items:',items.length);
+
     if(items.length > 0) {
       console.log('get data from db!!',items);
       res.restaurants = items;
@@ -56,9 +44,7 @@ class DBHelper {
       fetch(`http://localhost:1337/restaurants`).then(response => {
       return response.json();
     }).then(response => {
-      for(let i = 0; i < response.length; i++) {
-        response[i].id = i+1;
-      }
+
       res.restaurants = response;
       const restaurants = res.restaurants;
       console.log('rrestaurant in fetch event : ', restaurants);
@@ -232,27 +218,6 @@ navigator.serviceWorker.register('/sw.js').then(function(reg) {
   console.log('Registration failed:', error);
 });
 
-
-
-//console.log('res', res);
-
-/*dbPromise.then(function(db) {
-
-  var tx = db.transaction('restaurants', 'readwrite');
-  var store = tx.objectStore('restaurants');
-  let restaurants = res.restaurants;
-  return Promise.all(restaurants.map(function(item) {
-    console.log('Adding item', item);
-    return store.add(item);
-  })
-  ).catch(function(e) {
-    tx.abort();
-      console.log(e);
-    }).then(function() {
-      console.log('All items added successfully');
-    });
-});
-*/
 let restaurants,
   neighborhoods,
   cuisines
@@ -271,12 +236,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
 });
 
-/*window.addEventListener('load', () => {
-
-  addIntersection();
-
-});
-*/
 
 /**
  * Fetch all neighborhoods and set their HTML.
@@ -401,11 +360,6 @@ elementCollapsable.addEventListener('click', () => {
   initMap();
 });
 
-console.log('map.js');
-/*document.addEventListener('DOMContentLoaded', () => {
-  initMap();
-});*/
-
 
 /**
  * Add markers for current restaurants to the map.
@@ -451,26 +405,6 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
   addMarkersToMap();
 }
 
-/**
- * Adjust footer
- */
-resizeFooter = () => {
-  let lastElement = document.getElementById('restaurants-list');
-
-  let footerElement = document.getElementById('footer');
-  let height = lastElement.scrollHeight;
-
-  footerElement.style.position = 'relative';
-  footerElement.style.top = height+3+'px';
-}
-
-window.addEventListener('load', () => {
-  resizeFooter();
-});
-
-window.onresize = () => {
-  resizeFooter();
-}
 
 let idIntersectingElement;
 var io = new IntersectionObserver(entries => {
@@ -576,4 +510,3 @@ console.log('afterUpdate');
   image.sizes =  "(max-width: 600px) 60vw,(min-width: 601px) 50vw";
  });
 }
-

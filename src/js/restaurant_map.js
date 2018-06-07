@@ -16,8 +16,8 @@ initMap = () => {
         scrollwheel: false
       });
       if (breadcrumbCounter == 0) {
-		fillBreadcrumb();
-		breadcrumbCounter++;
+		    fillBreadcrumb();
+		    breadcrumbCounter++;
       }
       //fillBreadcrumb();
       DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);

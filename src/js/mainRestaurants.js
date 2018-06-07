@@ -82,4 +82,3 @@ console.log('afterUpdate');
   image.sizes =  "(max-width: 600px) 60vw,(min-width: 601px) 50vw";
  });
 }
-
