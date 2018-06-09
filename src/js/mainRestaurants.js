@@ -33,14 +33,15 @@ createRestaurantHTML = (restaurant,callback) => {
   console.log('loadImage,restaurant,idStr', restaurant,idStr);
   image = document.getElementById(idStr);
   image.src = DBHelper.imageUrlForRestaurant(restaurant);
-  image.alt = "showing restaurant is " + restaurant.name + " and cuisine type is " + restaurant.cuisine_type;
 
-  // add alt tag to images.
   //add srcset and sizes to make responsive images.
   image.srcset =  `images/${restaurant.id}-400small.jpg 480w,images/${restaurant.id}-600medium.jpg 600w`;
   image.sizes =  "(max-width: 600px) 60vw,(min-width: 601px) 50vw";
 
   }
+
+  // add alt tag to images.
+  image.alt = "showing restaurant is " + restaurant.name + " and cuisine type is " + restaurant.cuisine_type;
 
   return li
 }

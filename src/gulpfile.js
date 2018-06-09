@@ -1,10 +1,11 @@
 var gulp = require('gulp');
 var sass = require('gulp-sass');
-let cleanCSS = require('gulp-clean-css');
+var cleanCSS = require('gulp-clean-css');
 var concat = require('gulp-concat');
-var uglify = require('gulp-uglify');
+var uglify = require('gulp-uglify-es').default;
 var htmlmin = require('gulp-htmlmin');
 var browserSync = require('browser-sync');
+var rename = require('gulp-rename');
 
 gulp.task('default', ['serve','styles','minify-css','scripts'], function() {
 
@@ -29,19 +30,30 @@ gulp.task('styles', function() {
 		.pipe(sass({
 			outputStyle: 'compressed'
 		}).on('error', sass.logError))
-		.pipe(gulp.dest('/sass'))
+		.pipe(gulp.dest('dist/sass'))
 });
 
 gulp.task('minify-css', function() {
   return gulp.src('css/*.css')
     .pipe(cleanCSS({compatibility: 'ie8'}))
-    .pipe(gulp.dest('sass'));
+    .pipe(gulp.dest('dist/sass'));
 });
 
-gulp.task('scripts', function() {
+gulp.task('scripts', function(cb) {
 	return gulp.src(['js/**/dbhelper.js', 'js/**/main.js', 'js/**/intersection.js', 'js/**/mainRestaurants.js'])
 		.pipe(concat('all.js'))
 		.pipe(gulp.dest('js'))
+    .pipe(rename('uglify.js'))
+    .pipe(uglify())
+    .pipe(gulp.dest('dist/js'));
+});
+gulp.task('scripts-restaurant-review', function(cb) {
+  return gulp.src(['js/**/dbhelper.js', 'js/**/restaurant_info.js', 'js/**/restaurant_map.js'])
+    .pipe(concat('all_restaurant.js'))
+    .pipe(gulp.dest('js'))
+    .pipe(rename('uglify_restaurant.js'))
+    .pipe(uglify())
+    .pipe(gulp.dest('dist/js'));
 });
 
 gulp.task('watch', function() {
@@ -50,11 +62,15 @@ gulp.task('watch', function() {
 });
 
 
-gulp.task('serve', ['scripts', 'minify-css','styles'], function() {
+
+gulp.task('serve', ['minify','scripts', 'minify-css','styles'], function() {
   browserSync.init({
-    server: '.',
+    server: {
+            baseDir: "./dist"
+        },
     port: 8000
   });
+
   gulp.watch('css/*.css', ['minify-css']).on('change', browserSync.reload);
   gulp.watch('js/*.js', ['scripts']).on('change', browserSync.reload);
   gulp.watch('css/*.css', ['styles']).on('change', browserSync.reload);
